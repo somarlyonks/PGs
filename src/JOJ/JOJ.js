@@ -13,13 +13,14 @@ var createScene = function() {
         var scene = new BABYLON.Scene(engine)
         scene.clearColor = new BABYLON.Color3(0xfa / 0xff, 0xf0 / 0xff, 0xe6 / 0xff)
         // camera
-        var camera = new BABYLON.ArcRotateCamera("camera1",  0, 0, 0, new BABYLON.Vector3(5, 2, 0), scene)
-        camera.setPosition(new BABYLON.Vector3(30, 30, -30))
+        var camera = new BABYLON.FreeCamera("camera1",  new V3(10, 10, -10), scene)
+        camera.setTarget(V3.Zero())
         camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA
-        camera.orthoLeft = -3
-        camera.orthoRight = 3
-        camera.orthoTop = 8
-        camera.orthoBottom = -2
+        const {canvasFixW, canvasFixH} = getCanvasFixWH()
+        camera.orthoLeft = -3 * canvasFixW
+        camera.orthoRight = 3 * canvasFixW
+        camera.orthoTop = 3 * canvasFixH
+        camera.orthoBottom = -3 * canvasFixH
         camera.attachControl(canvas, true)
         // lights
         var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 0.5, 0), scene)
@@ -31,93 +32,121 @@ var createScene = function() {
         var pilot = BABYLON.Mesh.MergeMeshes([body, head], true)
         // coor
         var coor = new BABYLON.Mesh.CreateSphere('s', 0, 0.1, scene)
-        coor.position.z = -5
-        coor.position.y = 4
-        coor.position.x = -1
+        coor.position.z = 1
+        coor.position.y = 2
+        coor.position.x = 1
         camera.parent = coor
     }
 
-    {  // AXIS
-        // show axis
-        (function showAxis (size) {
-            var makeTextPlane = function(text, color, size) {
-            var dynamicTexture = new BABYLON.DynamicTexture("DynamicTexture", 50, scene, true)
-            dynamicTexture.hasAlpha = true
-            dynamicTexture.drawText(text, 5, 40, "bold 36px Arial", color , "transparent", true)
-            var plane = new BABYLON.Mesh.CreatePlane("TextPlane", size, scene, true)
-            plane.material = new BABYLON.StandardMaterial("TextPlaneMaterial", scene)
-            plane.material.backFaceCulling = false
-            plane.material.specularColor = new BABYLON.Color3(0, 0, 0)
-            plane.material.diffuseTexture = dynamicTexture
-            return plane
+    // {  // utils
+        function getCanvasFixWH (basicSize=1) {
+            const ratio = canvas.height / canvas.width
+            const fix = 1 / Math.sqrt(ratio)
+
+            const canvasFixW = basicSize * fix
+            const canvasFixH = basicSize * fix * ratio
+
+            return {canvasFixW, canvasFixH}
+        }
+    // }
+
+    {   // AXIS
+        getAxis()
+        // getAxis(1, 1, pilot)
+
+        function globalAxis (size) {
+            function makeTextPlane (text, color, size) {
+                const dynamicTexture = new BABYLON.DynamicTexture('DynamicTexture', 50, scene, true)
+                dynamicTexture.hasAlpha = true
+                dynamicTexture.drawText(text, 5, 40, 'bold 36px Arial', color , 'transparent', true)
+                const plane = new BABYLON.Mesh.CreatePlane('TextPlane', size, scene, true)
+                plane.material = new BABYLON.StandardMaterial('TextPlaneMaterial', scene)
+                plane.material.backFaceCulling = false
+                plane.material.specularColor = new BABYLON.Color3(0, 0, 0)
+                plane.material.diffuseTexture = dynamicTexture
+                return plane
             }
-        
-            var axisX = BABYLON.Mesh.CreateLines("axisX", [ 
-            new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0), 
-            new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
+
+            const axisX = BABYLON.Mesh.CreateLines('axisX', [
+                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0), 
+                new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
             ], scene)
             axisX.color = new BABYLON.Color3(1, 0, 0)
-            var xChar = makeTextPlane("X", "red", size / 10)
+            const xChar = makeTextPlane('X', 'red', size / 10)
             xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0)
-            var axisY = BABYLON.Mesh.CreateLines("axisY", [
+
+            const axisY = BABYLON.Mesh.CreateLines('axisY', [
                 new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( -0.05 * size, size * 0.95, 0), 
                 new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( 0.05 * size, size * 0.95, 0)
-                ], scene)
+            ], scene)
             axisY.color = new BABYLON.Color3(0, 1, 0)
-            var yChar = makeTextPlane("Y", "green", size / 10)
+            const yChar = makeTextPlane('Y', 'green', size / 10)
             yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size)
-            var axisZ = BABYLON.Mesh.CreateLines("axisZ", [
+
+            const axisZ = BABYLON.Mesh.CreateLines('axisZ', [
                 new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
                 new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
                 ], scene)
             axisZ.color = new BABYLON.Color3(0, 0, 1)
-            var zChar = makeTextPlane("Z", "blue", size / 10)
+            var zChar = makeTextPlane('Z', 'blue', size / 10)
             zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size)
-        })(8)
-        //Local Axes
-        function localAxes(size) {
-            var pilot_local_axisX = BABYLON.Mesh.CreateLines("pilot_local_axisX", [ 
-            new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0), 
-            new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
-            ], scene)
-            pilot_local_axisX.color = new BABYLON.Color3(1, 0, 0)
+        }
 
-            pilot_local_axisY = BABYLON.Mesh.CreateLines("pilot_local_axisY", [
+        function localAxis(size) {
+            const localAxisX = BABYLON.Mesh.CreateLines('localAxisX', [
+                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0), 
+                new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
+            ], scene)
+            localAxisX.color = new BABYLON.Color3(1, 0, 0)
+
+            localAxisY = BABYLON.Mesh.CreateLines('localAxisY', [
                 new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
                 new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
             ], scene)
-            pilot_local_axisY.color = new BABYLON.Color3(0, 1, 0)
+            localAxisY.color = new BABYLON.Color3(0, 1, 0)
 
-            var pilot_local_axisZ = BABYLON.Mesh.CreateLines("pilot_local_axisZ", [
+            const localAxisZ = BABYLON.Mesh.CreateLines('localAxisZ', [
                 new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
                 new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
             ], scene)
-            pilot_local_axisZ.color = new BABYLON.Color3(0, 0, 1)
+            localAxisZ.color = new BABYLON.Color3(0, 0, 1)
 
-            var pilot_local_axisZM = BABYLON.Mesh.CreateLines("pilot_local_axisZ", [
+            const localAxisZM = BABYLON.Mesh.CreateLines('localAxisZ', [
                 new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, -15)
             ], scene)
-            pilot_local_axisZ.color = new BABYLON.Color3(0, 0, 1)
+            localAxisZ.color = new BABYLON.Color3(0, 0, 1)
 
-            var local_origin = BABYLON.MeshBuilder.CreateBox("local_origin", {size:1}, scene)
-            local_origin.isVisible = false
-            
-            pilot_local_axisX.parent = local_origin
-            pilot_local_axisY.parent = local_origin
-            pilot_local_axisZ.parent = local_origin 
-            pilot_local_axisZM.parent = local_origin 
-            
-            return local_origin
+            const localOrigin = BABYLON.MeshBuilder.CreateBox('localOrigin', {size:1}, scene)
+            localOrigin.isVisible = false
+
+            localAxisX.parent = localOrigin
+            localAxisY.parent = localOrigin
+            localAxisZ.parent = localOrigin
+            localAxisZM.parent = localOrigin
+
+            return localOrigin
         }
-        var localOrigin = localAxes(2)
-        localOrigin.parent = pilot
+
+        function getAxis (needGlobalAxis=true, needLocalAxis=false, origin=false, globalSize=8, localSize=2) {
+            if (needGlobalAxis) {
+                globalAxis(globalSize)
+            }
+            if (needLocalAxis && parent) {
+                const localOrigin = localAxis(localSize)
+                localOrigin.parent = origin
+            }
+        }
     }
 
     function createStage (distance, prev={position: {x: 0, y: 0, z:0}, direction: 'right'}) {
+        function getRandomDistance (min=2, max=5) {
+            return min + Math.random() * (max - min)
+        }
         const stage = BABYLON.MeshBuilder.CreateBox('stage',
             {width: 1, height: 0.6, depth: 1},
             scene
         )
+        distance = getRandomDistance()
 
         stage.position = new V3(
             prev.direction === 'right' ? prev.position.x : prev.position.x - distance,
@@ -127,7 +156,6 @@ var createScene = function() {
 
         stage.direction = prev.direction === 'right' ? 'left' : 'right'
         stage.position.y = -0.3
-        console.log(stage.direction)
         return stage
     }
 
@@ -144,6 +172,21 @@ var createScene = function() {
         stages.push(createStage(4, stages[7]))
         stages.splice(0, 1)[0].dispose()
     }
+    coor.getNextPosition = function () { // before addStage()
+        console.log('this', this)
+        const x = (stages[2].position.x + stages[1].position.x) / 2
+        const z = (stages[2].position.z + stages[1].position.z) / 2
+        return {x, y: this.position.y, z}
+    }
+
+    coor.goNext = function (framesCount) {
+        const {x, z} = this.getNextPosition()
+        const distanceX = x - this.position.x
+        const distanceZ = z - this.position.z
+        this.translate(X, distanceX / framesCount, WORLD)
+        this.translate(Z, distanceZ / framesCount, WORLD)
+    }
+    console.log(coor)
 
     pilot.scaling = new V3(0.75, 0.8, 0.75)
     pilot.position = new V3(0, 0.8 * 0.75 * 0.5, 0)
@@ -192,16 +235,18 @@ var createScene = function() {
         speed = down * sq2
         TIME = getFrames(speed, g)
         speedframe = speed / 60
-        console.log('--------------', TIME)
+        console.log('--------------', down)
     }
 
     function jump () {
         ++t
 
         if (pressed) {
-            down += 0.1
-            pilot.scaling.y -= 0.004
-            pilot.position.y -= 0.002
+            if (pilot.scaling.y > 0.4) {
+                down += 0.1
+                pilot.scaling.y -= 0.004
+                pilot.position.y -= 0.002
+            }
         } else {
             if (curDIR === 'right') {
                 if (completed) {
@@ -228,13 +273,11 @@ var createScene = function() {
             const speedG = -gframe * t
             pilot.translate(Y, speedG, WORLD)
             pilot.translate(speedDIR, speedframe, WORLD)
-            coor.translate(Z, speedframe / sq2, WORLD)
+            coor.goNext(TIME)
         } else {
             pilot.rotate(new V3(1, 0, 0), PI * 2 / TIME * 1, BABYLON.Space.LOCAL)
-            pilot.position.y = 0.3 // FIXME: really ? manully?
-            completed = true
             curDIR = 'left'
-            addStage()
+            jumpCompleted()
         }
     }
 
@@ -246,14 +289,18 @@ var createScene = function() {
             const speedG = -gframe * t
             pilot.translate(Y, speedG, WORLD)
             pilot.translate(speedDIR, speedframe, WORLD)
-            coor.translate(coorDIR, speedframe / sq2, WORLD)
+            coor.goNext(TIME)
         } else {
             pilot.rotate(new V3(0, 0, 1), PI * 2 / TIME * 1, BABYLON.Space.LOCAL)
-            pilot.position.y = 0.3 // FIXME: really ? manully?
-            completed = true
             curDIR = 'right'
-            addStage()
+            jumpCompleted()
         }
+    }
+
+    function jumpCompleted () {
+        pilot.position.y = 0.3
+        completed = true
+        addStage()
     }
 
     scene.registerAfterRender(jump)
