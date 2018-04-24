@@ -21,7 +21,7 @@ var createScene = function() {
         camera.orthoRight = 3 * canvasFixW
         camera.orthoTop = 3 * canvasFixH
         camera.orthoBottom = -3 * canvasFixH
-        camera.attachControl(canvas, true)
+        // camera.attachControl(canvas, true)
         // lights
         var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 0.5, 0), scene)
         light.intensity = 0.8
@@ -30,12 +30,15 @@ var createScene = function() {
         var head = new BABYLON.Mesh.CreateSphere("head", 0, 0.35, scene)
         head.position.y = 0.5
         var pilot = BABYLON.Mesh.MergeMeshes([body, head], true)
-        // coor
-        var coor = new BABYLON.Mesh.CreateSphere('s', 0, 0.1, scene)
-        coor.position.z = 1
-        coor.position.y = 2
-        coor.position.x = 1
-        camera.parent = coor
+        pilot.scaling = new V3(0.75, 0.8, 0.75)
+        pilot.position = new V3(0, 0.8 * 0.75 * 0.5, 0)
+        // cmrHost
+        var cmrHost = new BABYLON.Mesh('cameraHost', scene)
+        cmrHost.position.z = 1
+        cmrHost.position.y = 2
+        cmrHost.position.x = 1
+        cmrHost.layerMask = 0
+        camera.parent = cmrHost
     }
 
     // {  // utils
@@ -51,8 +54,7 @@ var createScene = function() {
     // }
 
     {   // AXIS
-        getAxis()
-        // getAxis(1, 1, pilot)
+        getAxis(1, 1, pilot)
 
         function globalAxis (size) {
             function makeTextPlane (text, color, size) {
@@ -138,7 +140,7 @@ var createScene = function() {
         }
     }
 
-    function createStage (distance, prev={position: {x: 0, y: 0, z:0}, direction: 'right'}) {
+    function createStage (prev={position: {x: 0, y: 0, z:0}, direction: 'right'}) {
         function getRandomDistance (min=2, max=5) {
             return min + Math.random() * (max - min)
         }
@@ -146,7 +148,7 @@ var createScene = function() {
             {width: 1, height: 0.6, depth: 1},
             scene
         )
-        distance = getRandomDistance()
+        const distance = getRandomDistance()
 
         stage.position = new V3(
             prev.direction === 'right' ? prev.position.x : prev.position.x - distance,
@@ -159,41 +161,78 @@ var createScene = function() {
         return stage
     }
 
-    const firstStage = createStage(4)
+    const firstStage = createStage()
     firstStage.setEnabled(false)
-    const stages = [firstStage, createStage(4)]
-    stages.push(createStage(4, stages[1]))
-    stages.push(createStage(4, stages[2]))
-    stages.push(createStage(4, stages[3]))
-    stages.push(createStage(4, stages[4]))
-    stages.push(createStage(4, stages[5]))
-    stages.push(createStage(4, stages[6]))
+    const stages = [firstStage, createStage()]
+    stages.push(createStage(stages[1]))
+    stages.push(createStage(stages[2]))
+    stages.push(createStage(stages[3]))
+    stages.push(createStage(stages[4]))
+    stages.push(createStage(stages[5]))
+    stages.push(createStage(stages[6]))
     function addStage () {
-        stages.push(createStage(4, stages[7]))
+        stages.push(createStage(stages[7]))
         stages.splice(0, 1)[0].dispose()
     }
-    coor.getNextPosition = function () { // before addStage()
-        console.log('this', this)
+
+    cmrHost.getNextPosition = function () { // before addStage()
         const x = (stages[2].position.x + stages[1].position.x) / 2
         const z = (stages[2].position.z + stages[1].position.z) / 2
-        return {x, y: this.position.y, z}
+        this.distanceX = x - this.position.x
+        this.distanceZ = z - this.position.z
     }
 
-    coor.goNext = function (framesCount) {
-        const {x, z} = this.getNextPosition()
-        const distanceX = x - this.position.x
-        const distanceZ = z - this.position.z
-        this.translate(X, distanceX / framesCount, WORLD)
-        this.translate(Z, distanceZ / framesCount, WORLD)
+    cmrHost.goNext = function (framesCount) {        
+        this.translate(X, this.distanceX / framesCount, WORLD)
+        this.translate(Z, this.distanceZ / framesCount, WORLD)
     }
-    console.log(coor)
 
-    pilot.scaling = new V3(0.75, 0.8, 0.75)
-    pilot.position = new V3(0, 0.8 * 0.75 * 0.5, 0)
+    pilot.notOnStage = function () {
+        const rangeX = [
+            stages[1].position.x - 1 / 2,
+            stages[1].position.x + 1 / 2,
+        ]
+        const rangeZ = [
+            stages[1].position.z - 1 / 2,
+            stages[1].position.z + 1 / 2,
+        ]
+        function outRange (self, range) {
+            if (range[0] > self) return 1
+            if (self > range[1]) return 2
+            return 0
+        } // TODO: fall directly
+        this.fallDirection = [0, 'left', 'right'][outRange(this.position.x, rangeX)] ||
+          [0, 'backward', 'forward'][outRange(this.position.z, rangeZ)]
+
+        if (this.fallDirection) {
+            this.fallCountDown = 60
+        }
+
+        return this.fallDirection
+    }
+    pilot.fall = function () {
+        const dir = this.fallDirection
+        const DIRECTION = dir === 'left' || dir === 'right' ? Z : X
+        const ANGLE = dir === 'backward' || dir === 'right' ? -1 : 1
+
+        if (this.fallCountDown > 30) { // TODO: fix a little
+            // TODO: change rotate axis to edge
+            this.rotate(DIRECTION, ANGLE * PI / 2 / 30, WORLD)
+            this.translate(Y, -1 * 0.2 / 30, WORLD)
+        } else if (this.fallCountDown > 0) {
+            this.translate(Y, -1 * 0.4 / 30, WORLD)
+        } // TODO: roll randomly
+        this.fallCountDown--
+
+        return this
+    }
+
 
     // args
     let speed = 6.5 * sq2
+    let speedframe = speed / 60
     const g = getG()
+    const gframe = g / 60 / 60
     /** calculate a normal g in pixel/s^2
      * @param {number} distance
      * @param {number} sec
@@ -213,15 +252,13 @@ var createScene = function() {
         return speed * speed / g / 2
     }
 
-    const gframe = g / 60 / 60
-    let speedframe = speed / 60
-
     let t = 0
     let TIME = 0
     let curDIR = 'right'
     let completed = false
     let down = 0
     let pressed = false
+    let end = false
     scene.onPointerDown = () => { // TODO: running
         down = 0
         pressed = true
@@ -235,12 +272,19 @@ var createScene = function() {
         speed = down * sq2
         TIME = getFrames(speed, g)
         speedframe = speed / 60
-        console.log('--------------', down)
+        cmrHost.getNextPosition()
     }
 
     function jump () {
         ++t
+        if (end) {
+            pilot.fall()
+        } else {
+            press()
+        }
+    }
 
+    function press () {
         if (pressed) {
             if (pilot.scaling.y > 0.4) {
                 down += 0.1
@@ -269,13 +313,13 @@ var createScene = function() {
     function jumpright () {
         const speedDIR = Y.add(Z).normalize()
         if(t < TIME) {
-            pilot.rotate(new V3(1, 0, 0), PI * 2 / TIME * 1, BABYLON.Space.LOCAL)
+            pilot.rotate(X, PI * 2 / TIME * 1, BABYLON.Space.LOCAL)
             const speedG = -gframe * t
             pilot.translate(Y, speedG, WORLD)
             pilot.translate(speedDIR, speedframe, WORLD)
-            coor.goNext(TIME)
+            cmrHost.goNext(TIME)
         } else {
-            pilot.rotate(new V3(1, 0, 0), PI * 2 / TIME * 1, BABYLON.Space.LOCAL)
+            pilot.rotate(X, PI * 2 / TIME * 1, BABYLON.Space.LOCAL)
             curDIR = 'left'
             jumpCompleted()
         }
@@ -283,15 +327,15 @@ var createScene = function() {
 
     function jumpleft () {
         const speedDIR = new V3(-1, 1, 0).normalize()
-        const coorDIR = new V3(-1, 0, 0).normalize()
+        const cmrHostDIR = new V3(-1, 0, 0).normalize()
         if(t < TIME) {
-            pilot.rotate(new V3(0, 0, 1), PI * 2 / TIME * 1, BABYLON.Space.LOCAL)
+            pilot.rotate(Z, PI * 2 / TIME * 1, BABYLON.Space.LOCAL)
             const speedG = -gframe * t
             pilot.translate(Y, speedG, WORLD)
             pilot.translate(speedDIR, speedframe, WORLD)
-            coor.goNext(TIME)
+            cmrHost.goNext(TIME)
         } else {
-            pilot.rotate(new V3(0, 0, 1), PI * 2 / TIME * 1, BABYLON.Space.LOCAL)
+            pilot.rotate(Z, PI * 2 / TIME * 1, BABYLON.Space.LOCAL)
             curDIR = 'right'
             jumpCompleted()
         }
@@ -300,6 +344,8 @@ var createScene = function() {
     function jumpCompleted () {
         pilot.position.y = 0.3
         completed = true
+        end = pilot.notOnStage()
+        console.log(end)
         addStage()
     }
 
