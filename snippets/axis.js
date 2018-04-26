@@ -79,7 +79,7 @@
         if (needGlobalAxis) {
             globalAxis(globalSize)
         }
-        if (needLocalAxis && parent) {
+        if (needLocalAxis && origin) {
             const localOrigin = localAxis(localSize)
             localOrigin.parent = origin
         }
