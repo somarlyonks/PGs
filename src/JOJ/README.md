@@ -2,7 +2,7 @@
 
 ## HISTORY
 
-53 - 57 - 58
+53 - 57 - 58 - 64 -65
 
 - https://www.babylonjs-playground.com/#1ZMJQV#53
 - https://www.babylonjs-playground.com/#1ZMJQV#57
@@ -15,4 +15,5 @@
 
 ## DOC
 
+- https://doc.babylonjs.com/how_to/rotate#translate
 - http://doc.babylonjs.com/how_to/how_to_use_actions

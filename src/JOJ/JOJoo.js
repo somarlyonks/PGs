@@ -215,8 +215,8 @@ var createScene = function() {
         }
 
         goNext (frames) {
-            this.translate(X, this.distanceX / framesCount, WORLD)
-            this.translate(Z, this.distanceZ / framesCount, WORLD)
+            this.translate(X, this.distanceX / frames, WORLD)
+            this.translate(Z, this.distanceZ / frames, WORLD)
         }
     }
 
@@ -242,14 +242,14 @@ var createScene = function() {
     class GameController {
         constructor (pilot) {
             this.end = false
-            this.Time = 0
+            this.TIME = 0 // contorls the render loop
             this.t = 0
             this.pressed = false
             this.power = 0
             this.curDIR = 'right'
             this.pilot = pilot
             this.pilot.controller = this
-            this.g = new Physics()
+            this.G = new Physics()
         }
 
         runGame () {
@@ -273,7 +273,7 @@ var createScene = function() {
                 if (this.completed) {
                     this.down = 0
                     this.TIME = 0
-                } else if (TIME) {
+                } else if (this.TIME) {
                     this.pilot[`jump${this.curDIR}`]()
                 }
             }
@@ -290,14 +290,22 @@ var createScene = function() {
     }
 
     class Pilot {
+        constructor (pilot) {
+            this.pilot = pilot
+            this.speed = 0
+            this.speedframe = this.speed / 60
+            this.position = this.pilot.position
+            this.translate = this.pilot.translate
+            this.rotate = this.pilot.rotate
+        }
         jump (speedDIR, rotateDIR) {
-            const TIME = this.controller.Time
+            const TIME = this.controller.TIME
             if (this.controller.t < TIME) {
                 this.rotate(rotateDIR, PI * 2 / TIME * 1, LOCAL)
                 const speedG = -this.controller.gframe * this.controller.t
                 this.translate(Y, speedG, WORLD)
                 this.translate(speedDIR, this.controller.speedframe, WORLD)
-                cmrHost.goNext(TIME)
+                cmrHost.goNext(TIME) // TODO
             } else {
                 this.rotate(rotateDIR, PI * 2 / TIME * 1, LOCAL)
                 this.controller.changeDIR()
@@ -362,8 +370,8 @@ var createScene = function() {
     }
 
     // args
-    let speed = 6.5 * sq2
-    let speedframe = speed / 60
+    pilot.speed = 6.5 * sq2
+    pilot.speedframe = speed / 60
 
     const stages = new Stages()
     const cmrHost = new CameraHost('cmrHost', scene, new V3(1, 2, 1), camera, stages)
@@ -377,12 +385,12 @@ var createScene = function() {
     scene.onPointerUp = () => {
         controller.completed = false
         controller.pressed = false
-        pilot.position.y = 0.3
-        pilot.scaling.y = 0.8
+        controller.pilot.position.y = 0.3
+        controller.pilot.scaling.y = 0.8
+        controller.pilot.speed = controller.down * sq2
+        controller.pilot.speedframe = speed / 60
         controller.t = 0
-        controller.speed = controller.down * sq2
-        controller.TIME = getFrames(speed, g)
-        controller.speedframe = speed / 60
+        controller.TIME = getFrames(controller.pilot.speed, controller.G.g)
         cmrHost.getNextPosition()
     }
 

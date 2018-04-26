@@ -182,7 +182,7 @@ var createScene = function() {
         this.distanceZ = z - this.position.z
     }
 
-    cmrHost.goNext = function (framesCount) {        
+    cmrHost.goNext = function (framesCount) {
         this.translate(X, this.distanceX / framesCount, WORLD)
         this.translate(Z, this.distanceZ / framesCount, WORLD)
     }
