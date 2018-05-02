@@ -2,7 +2,8 @@
 
 ## HISTORY
 
-53 - 57 - 58 - 64 - 65 - 69
+53 - 57 - 58 - 64 - 65 | 69 - 70
+ --------proto-------- | current
 
 - https://www.babylonjs-playground.com/#1ZMJQV#53
 - https://www.babylonjs-playground.com/#1ZMJQV#57
@@ -14,6 +15,8 @@
   - add a rough fall detect
 - https://www.babylonjs-playground.com/#1ZMJQV#69
   - add physics, alter to OOP
+- https://www.babylonjs-playground.com/#1ZMJQV#70
+  - JOPoo is working now
 
 ## DOC
 
