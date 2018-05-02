@@ -26,12 +26,14 @@ var createScene = function() {
         var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 0.5, 0), scene)
         light.intensity = 0.8
         // pilot
-        var body = BABYLON.MeshBuilder.CreateCylinder("body", { height: 0.75, diameterTop: 0.2, diameterBottom: 0.5, tessellation: 6, subdivisions: 1 }, scene)
+        var body = BABYLON.MeshBuilder.CreateCylinder("body", { height: 0.75, diameterTop: 0.2, diameterBottom: 0.5, tessellation: 20, subdivisions: 1 }, scene)
         var head = new BABYLON.Mesh.CreateSphere("head", 0, 0.35, scene)
         head.position.y = 0.5
         var pilot = BABYLON.Mesh.MergeMeshes([body, head], true)
         pilot.scaling = new V3(0.75, 0.8, 0.75)
         pilot.position = new V3(0, 0.8 * 0.75 * 0.5, 0)
+        var ground = BABYLON.Mesh.CreateGround('ground', 0.01, 0.01, 0, scene)
+        ground.position.y = -0.6
     }
 
     // {  // utils
@@ -44,94 +46,16 @@ var createScene = function() {
 
             return {canvasFixW, canvasFixH}
         }
+        class Host extends BABYLON.Mesh {
+            constructor(name, scene, position, son) {
+                super(name, scene)
+                this.position = position
+                this.layerMask = 0
+                this.son = son
+                this.son.parent = this
+            }
+        }
     // }
-
-    {   // AXIS
-        getAxis(1, 1, pilot)
-
-        function globalAxis (size) {
-            function makeTextPlane (text, color, size) {
-                const dynamicTexture = new BABYLON.DynamicTexture('DynamicTexture', 50, scene, true)
-                dynamicTexture.hasAlpha = true
-                dynamicTexture.drawText(text, 5, 40, 'bold 36px Arial', color , 'transparent', true)
-                const plane = new BABYLON.Mesh.CreatePlane('TextPlane', size, scene, true)
-                plane.material = new BABYLON.StandardMaterial('TextPlaneMaterial', scene)
-                plane.material.backFaceCulling = false
-                plane.material.specularColor = new BABYLON.Color3(0, 0, 0)
-                plane.material.diffuseTexture = dynamicTexture
-                return plane
-            }
-
-            const axisX = BABYLON.Mesh.CreateLines('axisX', [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0), 
-                new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
-            ], scene)
-            axisX.color = new BABYLON.Color3(1, 0, 0)
-            const xChar = makeTextPlane('X', 'red', size / 10)
-            xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0)
-
-            const axisY = BABYLON.Mesh.CreateLines('axisY', [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( -0.05 * size, size * 0.95, 0), 
-                new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( 0.05 * size, size * 0.95, 0)
-            ], scene)
-            axisY.color = new BABYLON.Color3(0, 1, 0)
-            const yChar = makeTextPlane('Y', 'green', size / 10)
-            yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size)
-
-            const axisZ = BABYLON.Mesh.CreateLines('axisZ', [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
-                new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
-                ], scene)
-            axisZ.color = new BABYLON.Color3(0, 0, 1)
-            var zChar = makeTextPlane('Z', 'blue', size / 10)
-            zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size)
-        }
-
-        function localAxis(size) {
-            const localAxisX = BABYLON.Mesh.CreateLines('localAxisX', [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0), 
-                new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
-            ], scene)
-            localAxisX.color = new BABYLON.Color3(1, 0, 0)
-
-            localAxisY = BABYLON.Mesh.CreateLines('localAxisY', [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
-                new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
-            ], scene)
-            localAxisY.color = new BABYLON.Color3(0, 1, 0)
-
-            const localAxisZ = BABYLON.Mesh.CreateLines('localAxisZ', [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
-                new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
-            ], scene)
-            localAxisZ.color = new BABYLON.Color3(0, 0, 1)
-
-            const localAxisZM = BABYLON.Mesh.CreateLines('localAxisZ', [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, -15)
-            ], scene)
-            localAxisZ.color = new BABYLON.Color3(0, 0, 1)
-
-            const localOrigin = BABYLON.MeshBuilder.CreateBox('localOrigin', {size:1}, scene)
-            localOrigin.isVisible = false
-
-            localAxisX.parent = localOrigin
-            localAxisY.parent = localOrigin
-            localAxisZ.parent = localOrigin
-            localAxisZM.parent = localOrigin
-
-            return localOrigin
-        }
-
-        function getAxis (needGlobalAxis=true, needLocalAxis=false, origin=false, globalSize=8, localSize=2) {
-            if (needGlobalAxis) {
-                globalAxis(globalSize)
-            }
-            if (needLocalAxis && parent) {
-                const localOrigin = localAxis(localSize)
-                localOrigin.parent = origin
-            }
-        }
-    }
 
     class Stages extends Array {
         constructor (size=3) {
@@ -161,8 +85,8 @@ var createScene = function() {
         constructor (prev={position: {x: 0, y: -0.3, z:0}, direction: 'right'}) {
             this.prev = prev
             this.position = V3.Zero()
-            this.minDistance = 2
-            this.maxDistance = 5
+            this.minDistance = 1.5
+            this.maxDistance = 3
             this.distance = this.getRandomDistance()
             this.width = 1
             this.height = 0.6
@@ -192,16 +116,6 @@ var createScene = function() {
         }
     }
 
-    class Host extends BABYLON.Mesh {
-        constructor(name, scene, position, son) {
-            super(name, scene)
-            this.position = position
-            this.layerMask = 0
-            this.son = son
-            this.son.parent = this
-        }
-    }
-
     class CameraHost extends Host {
         constructor(name, scene, position, son, stages) {
             super(name, scene, position, son)
@@ -221,17 +135,38 @@ var createScene = function() {
     }
 
     class Physics {
-        constructor (height=10, time=1) {
-            this.g = 2 * height / time / time
-            this.gframe = this.g / 60 / 60
+        constructor (scene) {
+            this.g = new V3(0, -9.81, 0)
+            this.physicsPlugin = new BABYLON.CannonJSPlugin()
+            this.scene = scene
+            this.impostors = []
+        }
+
+        enable () {
+            this.scene.enablePhysics(this.g, this.physicsPlugin)
+        }
+
+        impost (target, cate, params={mass: 0}) {
+            this.impostors.push(target)
+            target.physicsImpostor = new BABYLON.PhysicsImpostor(
+                target,
+                cate,
+                params,
+                this.scene
+            )
+        }
+
+        setGravity (g) {
+            this.scene.getPhysicsEngine().setGravity(g)
+            return this
         }
 
         getTime (speed) {
-            return sq2 * speed / this.g
+            return sq2 * speed / this.g.y * -1
         }
 
         getFrames (speed) {
-            return parseInt(this.getTime(speed, this.g) * 60)
+            return parseInt(this.getTime(speed) * 60)
         }
 
         getDistance (speed) {
@@ -239,8 +174,9 @@ var createScene = function() {
         }
     }
 
-    class GameController {
-        constructor (pilot) {
+    class GameController { // TODO: shadow
+        constructor (scene, pilot) {
+            this.scene = scene
             this.end = false
             this.TIME = 0 // contorls the render loop
             this.t = 0
@@ -249,7 +185,21 @@ var createScene = function() {
             this.curDIR = 'right'
             this.pilot = pilot
             this.pilot.controller = this
-            this.G = new Physics()
+            this.ground = ground
+            this.firstStage = new Stage()
+            this.firstStage.stage.position = new V3(0, -0.3, 0)
+            this.G = new Physics(this.scene)
+            this.initG()
+        }
+
+        initG () {
+            this.G.enable()
+            this.G.impost(this.pilot, BABYLON.PhysicsImpostor.CylinderImpostor, {
+                mass: 1, // TODO:
+                restitution: 0.9
+            })
+            this.G.impost(this.ground, BABYLON.PhysicsImpostor.PlaneImpostor, {mass: 0, restitution: 0.9})
+            this.G.impost(this.firstStage.stage, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0.9})
         }
 
         runGame () {
@@ -264,8 +214,11 @@ var createScene = function() {
 
         getPress () {
             if (this.pressed) {
-                if (this.pilot.scaling.y > 0.4) {
-                    down += 0.1
+                if (this.pilot.scaling.y > 0.5) {
+                    if (!this.pilot.physicsImpostor.disposed) {
+                        this.pilot.physicsImpostor.dispose()
+                    }
+                    this.down += 0.1
                     this.pilot.scaling.y -= 0.004
                     this.pilot.position.y -= 0.002
                 }
@@ -274,6 +227,9 @@ var createScene = function() {
                     this.down = 0
                     this.TIME = 0
                 } else if (this.TIME) {
+                    if (this.pilot.physicsImpostor.disposed) {
+                        this.pilot.physicsImpostor.wakeUp()
+                    }
                     this.pilot[`jump${this.curDIR}`]()
                 }
             }
@@ -295,7 +251,7 @@ var createScene = function() {
             this.speed = 0
             this.speedframe = this.speed / 60
             this.position = this.pilot.position
-            this.translate = this.pilot.translate
+            this.translate = this.pilot.translate // TODO:
             this.rotate = this.pilot.rotate
         }
         jump (speedDIR, rotateDIR) {
@@ -370,13 +326,11 @@ var createScene = function() {
     }
 
     // args
-    pilot.speed = 6.5 * sq2
-    pilot.speedframe = speed / 60
 
     const stages = new Stages()
     const cmrHost = new CameraHost('cmrHost', scene, new V3(1, 2, 1), camera, stages)
 
-    const controller = new GameController(pilot)
+    const controller = new GameController(scene, pilot)
 
     scene.onPointerDown = () => { // TODO: running
         controller.down = 0
@@ -388,13 +342,13 @@ var createScene = function() {
         controller.pilot.position.y = 0.3
         controller.pilot.scaling.y = 0.8
         controller.pilot.speed = controller.down * sq2
-        controller.pilot.speedframe = speed / 60
+        controller.pilot.speedframe = pilot.speed / 60
         controller.t = 0
-        controller.TIME = getFrames(controller.pilot.speed, controller.G.g)
+        controller.TIME = controller.G.getFrames(controller.pilot.speed)
         cmrHost.getNextPosition()
     }
 
-    scene.registerAfterRender(controller.runGame)
+    scene.registerAfterRender(() => controller.runGame())
 
     return scene
 }
