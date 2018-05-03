@@ -15,8 +15,11 @@
   - add a rough fall detect
 - https://www.babylonjs-playground.com/#1ZMJQV#69
   - add physics, alter to OOP
-- https://www.babylonjs-playground.com/#1ZMJQV#70
+- https://www.babylonjs-playground.com/#1ZMJQV#73
   - JOPoo is working now
+  - add endGame
+- https://www.babylonjs-playground.com/#1ZMJQV#74
+  - add shadow
 
 ## DOC
 
