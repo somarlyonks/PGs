@@ -15,3 +15,4 @@
 - https://doc.babylonjs.com/how_to/createbox_per_face_textures_and_colors
 - https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/Image
 - https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/rotate
+- https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/imageSmoothingEnabled
