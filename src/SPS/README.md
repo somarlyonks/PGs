@@ -14,6 +14,8 @@
 
 - https://doc.babylonjs.com/how_to/solid_particle_system
 - https://doc.babylonjs.com/babylon101/animations
+- https://doc.babylonjs.com/how_to/customise#particle-emitter-type
+- https://doc.babylonjs.com/how_to/sub_emitters
 
 ## REF
 
