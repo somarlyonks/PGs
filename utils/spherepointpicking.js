@@ -16,3 +16,13 @@ export default function pickRandomPointOnSphere () {
         z: 1 - 2 * r
     }
 }
+
+export function pick2 () {
+    const random = () => Math.random() * 2 - 1
+    const s = new window.BABYLON.Vector3(random(), random(), random()).normalize()
+    return {
+        x: s.x,
+        y: s.y,
+        z: s.z
+    }
+}
