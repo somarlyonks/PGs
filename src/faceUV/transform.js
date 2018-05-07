@@ -34,6 +34,7 @@ function process () {
         canvas.width = w + w * Math.PI + w
         canvas.height = h
         const ctx = canvas.getContext('2d')
+        ctx.imageSmoothingEnabled = false
 
         ctx.drawImage(images[0], 0, 0, w, h)
         ctx.drawImage(images[1], w, 0, w * Math.PI, h)
@@ -44,6 +45,7 @@ function process () {
         canvas.width = 6 * w
         canvas.height = h
         const ctx = canvas.getContext('2d')
+        ctx.imageSmoothingEnabled = false
 
         const rad = (degree) => degree * Math.PI / 180
 

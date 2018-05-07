@@ -23,8 +23,8 @@ var createScene = function() {
         camera.orthoBottom = -3 * canvasFixH
         // camera.attachControl(canvas, true)
         // lights
-        var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 0.5, 0), scene)
-        light.intensity = 0.8
+        var light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(1, -4, 2), scene);
+        light.intensity = 1
         // pilot
         var body = BABYLON.MeshBuilder.CreateCylinder("body", { height: 0.75, diameterTop: 0.2, diameterBottom: 0.5, tessellation: 20, subdivisions: 1 }, scene)
         var head = new BABYLON.Mesh.CreateSphere("head", 0, 0.35, scene)
@@ -32,7 +32,8 @@ var createScene = function() {
         var pilot = BABYLON.Mesh.MergeMeshes([body, head], true)
         pilot.scaling = new V3(0.75, 0.8, 0.75)
         pilot.position = new V3(0, 0.8 * 0.75 * 0.5, 0)
-        var ground = BABYLON.Mesh.CreateGround('ground', 0.01, 0.01, 0, scene)
+        var ground = BABYLON.Mesh.CreateGround('ground', 100, 100, 0, scene)
+        ground.rotation.y = PI / 2
         ground.position.y = -0.6
     }
 
@@ -58,12 +59,13 @@ var createScene = function() {
     // }
 
     const config = {
-        minDistance: 2, // 方块间最短距离
-        maxDistance: 4,   // 方块间最长距离
-        perScore: 1,      // 每步的分数
+        minDistance: 2,
+        maxDistance: 4,
+        perScore: 1,
+        shadowSize: 1048,
         enable: {
-            shadow: true, // 开启阴影
-            physics: true // 使用物理引擎
+            shadow: true,
+            physics: true
         }
     }
 
@@ -104,11 +106,27 @@ var createScene = function() {
         }
 
         getDistance (speed) {
-            return speed * speed / this.g / 2
+            return speed * speed / this.g.y / 2 * -1
         }
     }
 
     scene.G = new Physics(scene)
+
+    class Shadow extends BABYLON.ShadowGenerator {
+        constructor (size, light, ground) {
+            super(size, light)
+            this.useBlurExponentialShadowMap = true
+            // this.usePoissonSampling = true
+            this.ground = ground
+            ground.receiveShadows = true
+        }
+
+        addMesh (mesh) {
+            this.getShadowMap().renderList.push(mesh)
+        }
+    }
+
+    scene.shadow = new Shadow(config.shadowSize, light, ground)
 
     class Stages extends Array {
         constructor (size=3) {
@@ -129,6 +147,9 @@ var createScene = function() {
                 this.splice(0, 1)[0].dispose()
             }
             scene.G.impost(this.currentStage.stage, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0})
+            if (config.enable.shadow) {
+                scene.shadow.addMesh(this.currentStage.stage)
+            }
             this.push(this.currentStage)
 
             return this
@@ -190,7 +211,6 @@ var createScene = function() {
 
     /**
      * TODO:
-     * shadow
      * physics fix
      * pressing detect
      */
@@ -211,19 +231,24 @@ var createScene = function() {
             this.firstStage.stage.position = new V3(0, -0.3, 0)
             this.G = this.scene.G = this.scene.G || new Physics(this.scene)
             this.initG()
+            this.initShadow()
         }
 
         initG () {
             this.G.impost(this.pilot, BABYLON.PhysicsImpostor.CylinderImpostor, {
                 mass: 0.2,
-                restitution: 0.1
+                restitution: 0
             })
             this.G.impost(this.ground, BABYLON.PhysicsImpostor.PlaneImpostor, {mass: 0, restitution: 0.8})
             this.G.impost(this.firstStage.stage, BABYLON.PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0})
-            this.pilot.physicsImpostor.registerOnPhysicsCollide(
-                this.ground.physicsImpostor, (main, collided) => {
-                    this.endGame()
-            })
+        }
+
+        initShadow () {
+            if (config.enable.shadow) {
+                this.shadow = this.scene.shadow = this.scene.shadow || new Shadow(config.shadowSize, light, ground)
+                this.shadow.addMesh(this.pilot)
+                this.shadow.addMesh(this.firstStage.stage)
+            }
         }
 
         runGame () {
@@ -305,7 +330,11 @@ var createScene = function() {
         if (this.physicsImpostor.isDisposed) {
             this.controller.G.impost(this, BABYLON.PhysicsImpostor.CylinderImpostor, {
                 mass: 0.2,
-                restitution: 0.1
+                restitution: 0
+            })
+            this.physicsImpostor.registerOnPhysicsCollide(
+                this.controller.ground.physicsImpostor, (main, collided) => {
+                    this.controller.endGame()
             })
         }
     }
