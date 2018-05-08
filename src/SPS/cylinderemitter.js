@@ -8,6 +8,7 @@ class CylinderParticleEmitter {
         this.radius = radius
         this.height = height
         this.directionRandomizer = directionRandomizer
+        // this.updateFunction = particleEmitter.updateFunction
     }
 
     startDirectionFunction (emitPower, worldMatrix, directionToUpdate, particle) {
