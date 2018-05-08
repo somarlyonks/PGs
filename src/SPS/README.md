@@ -8,8 +8,12 @@
 - https://www.babylonjs-playground.com/#6P6U4G#9
   - backforward Cone
 - https://www.babylonjs-playground.com/indexStable.html#PU4WYI#31
+- https://www.babylonjs-playground.com/indexStable.html#PU4WYI#34
   - GPUParticleSystem
+- https://www.babylonjs-playground.com/indexStable.html#PU4WYI#37
+  - trailing particle
 - https://www.babylonjs-playground.com/#V07WF8#1
+- https://www.babylonjs-playground.com/#V07WF8#4
   - cylinder emitter
 
 ## DOC
