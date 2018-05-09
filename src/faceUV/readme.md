@@ -16,3 +16,7 @@
 - https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/Image
 - https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/rotate
 - https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/imageSmoothingEnabled
+
+## REF
+
+- https://www.madebymike.com.au/writing/canvas-image-manipulation/
