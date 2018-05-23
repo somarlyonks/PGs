@@ -28,6 +28,12 @@ module.exports = {
         ],
         "no-console": 0,
         "curly": 0,
-        "eqeqeq": "error"
+        "eqeqeq": "error",
+        "no-inner-declarations": 0,
+    },
+    "globals": {
+        "BABYLON": true,
+        "engine": true, // PG.engine
+        "canvas": true
     }
 };
