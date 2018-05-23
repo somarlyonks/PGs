@@ -11,7 +11,7 @@
         return {canvasFixW, canvasFixH}
     }
 
-    /**
+    /** http://playground.babylonjs.com/#TGNTGT#24
      * @param {BABYLON.AbstractMesh} box
      * @param {number} faceIndex starts from 0
      * @param {BABYLON.Color4} color
