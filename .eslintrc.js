@@ -26,6 +26,14 @@ module.exports = {
             "error",
             "never"
         ],
+        "no-unused-vars": [
+            "error",
+            {
+                "vars": "all",
+                "args": "none",
+                "ignoreRestSiblings": false
+            }
+        ],
         "no-console": 0,
         "curly": 0,
         "eqeqeq": "error",
