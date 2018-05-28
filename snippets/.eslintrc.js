@@ -43,6 +43,7 @@ module.exports = {
         "BABYLON": true,
         "engine": true, // PG.engine
         "canvas": true,
+        "camera": true,
         "scene": true,
     }
 };
