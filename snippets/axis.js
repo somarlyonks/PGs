@@ -34,7 +34,7 @@
         const axisZ = BABYLON.Mesh.CreateLines('axisZ', [
             new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
             new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
-            ], scene)
+        ], scene)
         axisZ.color = new BABYLON.Color3(0, 0, 1)
         var zChar = makeTextPlane('Z', 'blue', size / 10)
         zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size)
@@ -47,7 +47,7 @@
         ], scene)
         localAxisX.color = new BABYLON.Color3(1, 0, 0)
 
-        localAxisY = BABYLON.Mesh.CreateLines('localAxisY', [
+        const localAxisY = BABYLON.Mesh.CreateLines('localAxisY', [
             new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
             new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
         ], scene)
@@ -62,7 +62,6 @@
         const localAxisZM = BABYLON.Mesh.CreateLines('localAxisZ', [
             new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, -15)
         ], scene)
-        localAxisZ.color = new BABYLON.Color3(0, 0, 1)
 
         const localOrigin = BABYLON.MeshBuilder.CreateBox('localOrigin', {size:1}, scene)
         localOrigin.isVisible = false
