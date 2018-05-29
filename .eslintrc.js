@@ -38,6 +38,11 @@ module.exports = {
         "curly": 0,
         "eqeqeq": "error",
         "no-inner-declarations": 0,
+        "space-before-function-paren": "error",
+        "space-in-parens": "error",
+        "comma-spacing": "error",
+        "no-trailing-spaces": "error",
+        "key-spacing": "error",
     },
     "globals": {
         "BABYLON": true,
