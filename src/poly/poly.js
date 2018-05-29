@@ -1,11 +1,11 @@
-var createScene = function () {
+var createScene = function () { // eslint-disable-line
     var V3 = BABYLON.Vector3
-
+    /* eslint-disable no-unused-vars */
     var scene = new BABYLON.Scene(engine)
     var camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 3, Math.PI / 3, 50, BABYLON.Vector3.Zero(), scene)
     camera.attachControl(canvas, true)
     var light = new BABYLON.HemisphericLight('hemi', new BABYLON.Vector3(1, 1, 1), scene)
-
+    /* eslint-disable no-unused-vars */
     const vertex = [
         [ 0,           0,          1.154701],
         [ 1,           0,          0.5773503],
@@ -20,7 +20,7 @@ var createScene = function () {
         [-0.3333333,  -0.942809,  -0.5773503],
         [ 0,           0,         -1.154701]
     ]
-    const face = [
+    let face = [ // clockwise
         [0, 1, 2],
         [0, 3, 4],
         [2, 8, 7],
@@ -36,6 +36,35 @@ var createScene = function () {
         [5, 6, 10, 11],
         [7, 8, 11, 9]
     ]
+
+    function deleteDot (deletedIndex) {
+        let newFace = []
+        for (const fi in face) {
+            let f = face[fi]
+            const newF = f.filter(vertex => vertex !== deletedIndex)
+            if (newF.length !== f.length) {
+                const vi = f.indexOf(deletedIndex)
+                const vLeft = f[vi - 1] === void 0 ? f[f.length - 1] : f[vi - 1]
+                const vRight = f[vi + 1] === void 0 ? f[0] : f[vi + 1]
+                face[fi] = newF
+                // console.log('f', f)
+                if (f.length === 3) {
+                    newFace.push(vRight)
+                    newFace.push(vLeft)
+                } else {
+                    newFace.push(vLeft)
+                    newFace.push(vRight)
+                }
+            }
+        }
+        face = face.filter(face => face.length > 2)
+        newFace = Array.from(new Set(newFace))
+        face.push(newFace)
+        console.log(newFace, face)
+    }
+
+    deleteDot(0)
+    // face = face.map(face => face.map(vertex => vertex - 1).filter(vertex => vertex >= 0)).filter(face => face.length > 2)
 
     const polySize = 8
 
@@ -128,6 +157,7 @@ var createScene = function () {
                 }
                 axisPlane = BABYLON.MeshBuilder.CreatePlane('hitBoard', {size: 100}, scene)
                 axisPlane.rotation[rotateMap[pickedAxis.name.replace('localAxis', '')]] = Math.PI / 2
+                axisPlane.isVisible = false
                 axisPlane.parent = pickedMesh.parent
             }
         }
@@ -248,5 +278,6 @@ var createScene = function () {
 
         return localOrigin
     }
+    // }
     return scene
 }

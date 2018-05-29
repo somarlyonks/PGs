@@ -2,8 +2,9 @@
 
 ## HISTORY
 
-- http://playground.babylonjs.com/#TGNTGT#29
-- http://playground.babylonjs.com/#TGNTGT#30
+- [29 - basic](http://playground.babylonjs.com/#TGNTGT#29)
+- [30 - move dot](http://playground.babylonjs.com/#TGNTGT#30)
+- [32 - remove dot](http://playground.babylonjs.com/#TGNTGT#32)
 
 ## REF
 
