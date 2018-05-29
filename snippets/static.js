@@ -10,7 +10,7 @@
     var PI = Math.PI
     // scene
     var scene = new BABYLON.Scene(engine)
-    scene.clearColor = new BABYLON.Color3( .5, .5, .5)
+    scene.clearColor = new BABYLON.Color3(.5, .5, .5)
     // camera
     var camera = new BABYLON.ArcRotateCamera('camera', 0, 0, 0, new BABYLON.Vector3(3, 3, -3), scene)
     camera.setPosition(new BABYLON.Vector3(10, 5, -20))

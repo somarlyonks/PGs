@@ -7,7 +7,7 @@ scene.onPointerDown = (evt, pickingInfo) => {
 }
 
 scene.onPointerMove = (evt, pickingInfo) => {
-    const pickResult = getPickResult(camera, m => 1)    
+    const pickResult = getPickResult(camera, m => 1)
 }
 
 scene.onPointerUp = (evt, pickingInfo) => {
