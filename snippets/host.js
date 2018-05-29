@@ -1,5 +1,5 @@
 class Host extends BABYLON.Mesh {
-    constructor(name, scene, position, son) {
+    constructor (name, scene, position, son) {
         super(name, scene)
         this.position = position
         this.layerMask = 0
