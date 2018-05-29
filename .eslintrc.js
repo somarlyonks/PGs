@@ -43,6 +43,7 @@ module.exports = {
         "comma-spacing": "error",
         "no-trailing-spaces": "error",
         "key-spacing": "error",
+        "prefer-const": "error",
     },
     "globals": {
         "BABYLON": true,
