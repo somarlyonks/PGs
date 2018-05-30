@@ -38,9 +38,9 @@ var createScene = function () { // eslint-disable-line
     ]
 
     function deleteDot (deletedIndex) {
-        let edges = []
+        const edges = []
         for (const fi in face) {
-            let f = face[fi]
+            const f = face[fi]
             const newF = f.filter(vertex => vertex !== deletedIndex)
             if (newF.length !== f.length) {
                 const vi = f.indexOf(deletedIndex)
@@ -71,7 +71,7 @@ var createScene = function () { // eslint-disable-line
 
     const polySize = 8
 
-    let poly = BABYLON.MeshBuilder.CreatePolyhedron('poly', {
+    const poly = BABYLON.MeshBuilder.CreatePolyhedron('poly', {
         size: polySize,
         custom: { name: 'custom', category: 'Johnson solid', vertex, face },
         updatable: true
@@ -93,7 +93,7 @@ var createScene = function () { // eslint-disable-line
     let pickedVertex
     let pickedAxis
     let axisPlane
-    let axises = getAxis(0, 1, poly, 0, 3)
+    const axises = getAxis(0, 1, poly, 0, 3)
     let axisM = BABYLON.MeshBuilder.CreateLines('', {points: [V3.Zero(), V3.Zero()], updatable: true}, scene)
     function getPickResult (camera, cb) {
         return scene.pick(scene.pointerX, scene.pointerY, cb, true, camera)
