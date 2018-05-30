@@ -1,11 +1,11 @@
 var createScene = function () { // eslint-disable-line
     var V3 = BABYLON.Vector3
-    /* eslint-disable no-unused-vars */
+
     var scene = new BABYLON.Scene(engine)
     var camera = new BABYLON.ArcRotateCamera('Camera', Math.PI / 3, Math.PI / 3, 50, BABYLON.Vector3.Zero(), scene)
     camera.attachControl(canvas, true)
-    var light = new BABYLON.HemisphericLight('hemi', new BABYLON.Vector3(1, 1, 1), scene)
-    /* eslint-disable no-unused-vars */
+    var light = new BABYLON.HemisphericLight('hemi', new BABYLON.Vector3(1, 1, 1), scene) // eslint-disable-line
+
     const vertex = [
         [ 0,           0,          1.154701],
         [ 1,           0,          0.5773503],
@@ -38,7 +38,7 @@ var createScene = function () { // eslint-disable-line
     ]
 
     function deleteDot (deletedIndex) {
-        let newFace = []
+        let edges = []
         for (const fi in face) {
             let f = face[fi]
             const newF = f.filter(vertex => vertex !== deletedIndex)
@@ -47,23 +47,26 @@ var createScene = function () { // eslint-disable-line
                 const vLeft = f[vi - 1] === void 0 ? f[f.length - 1] : f[vi - 1]
                 const vRight = f[vi + 1] === void 0 ? f[0] : f[vi + 1]
                 face[fi] = newF
-                // console.log('f', f)
-                if (f.length === 3) {
-                    newFace.push(vRight)
-                    newFace.push(vLeft)
-                } else {
-                    newFace.push(vLeft)
-                    newFace.push(vRight)
-                }
+                edges.push([vRight, vLeft])
             }
         }
         face = face.filter(face => face.length > 2)
+        let newFace = [...edges[0]]
+        for (const _ of edges) { // eslint-disable-line
+            for (const edge of edges) {
+                if (edge[0] === newFace[newFace.length - 1]) {
+                    newFace.push(edge[1])
+                }
+            }
+        }
+        console.log('raw', newFace)
         newFace = Array.from(new Set(newFace))
         face.push(newFace)
         console.log(newFace, face)
     }
 
-    deleteDot(0)
+    deleteDot(2)
+    deleteDot(1)
     // face = face.map(face => face.map(vertex => vertex - 1).filter(vertex => vertex >= 0)).filter(face => face.length > 2)
 
     const polySize = 8
@@ -83,6 +86,8 @@ var createScene = function () { // eslint-disable-line
         dot.vertexIndex = index
         return dot
     })
+
+    // console.log('poly', poly.getVerticesData('normal'))
 
     // pick
     let pickedVertex
