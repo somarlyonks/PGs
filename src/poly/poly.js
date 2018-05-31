@@ -62,12 +62,36 @@ var createScene = function () { // eslint-disable-line
         console.log('raw', newFace)
         newFace = Array.from(new Set(newFace))
         face.push(newFace)
+        vertex.splice(deletedIndex, 1)
+        face = face.map(face => face.map(index => index - (index > deletedIndex ? 1 : 0)))
         console.log(newFace, face)
     }
 
-    deleteDot(2)
+    function addDot (addingIndex) {
+        const addingFace = face[addingIndex]
+        const siblings = addingFace.map(vertexI => vertex[vertexI])
+        if (!siblings || !siblings.length) return
+
+        const newVertex = siblings.reduce((newVertex, sibling) => newVertex.map((val, axis) => val + sibling[axis]), [0, 0, 0])
+        for (const axis in newVertex) {
+            newVertex[axis] /= siblings.length
+            newVertex[axis] += 0.2 * (newVertex[axis] > 0 ? 1 : newVertex[axis] < 0 ? -1 : 0)
+        }
+        vertex.push(newVertex)
+        for (let i = 0; i < siblings.length; i++) {
+            const newFace = addingFace.slice(i, i + 2)
+            if (newFace.length === 1) {
+                newFace.push(addingFace[0])
+            }
+            newFace.push(vertex.length - 1)
+
+            face.push(newFace)
+        }
+    }
+
+    // deleteDot(2)
     deleteDot(1)
-    // face = face.map(face => face.map(vertex => vertex - 1).filter(vertex => vertex >= 0)).filter(face => face.length > 2)
+    addDot(1)
 
     const polySize = 8
 

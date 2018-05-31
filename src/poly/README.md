@@ -6,6 +6,7 @@
 - [30 - move dot](http://playground.babylonjs.com/#TGNTGT#30)
 - [32 - remove dot](http://playground.babylonjs.com/#TGNTGT#32)
 - [34 - fix algorithm](http://playground.babylonjs.com/#TGNTGT#34)
+- [38 - add dot](http://playground.babylonjs.com/#TGNTGT#38)
 
 ## REF
 
