@@ -1,27 +1,23 @@
 var createScene = function () { // eslint-disable-line
     var scene = new BABYLON.Scene(engine)
-    var camera = new BABYLON.ArcRotateCamera('Camera', -Math.PI / 2,  Math.PI / 2, 5, BABYLON.Vector3.Zero(), scene)
+    var camera = new BABYLON.ArcRotateCamera('camera1', 0, 0, 5, new BABYLON.Vector3(0, 0, 0), scene)
+
+    camera.setTarget(BABYLON.Vector3.Zero())
+
     camera.attachControl(canvas, true)
 
-    const light = new BABYLON.PointLight('light', new BABYLON.Vector3(0, 0, 0), scene)
-    light.parent = camera
-    // light.diffuse = new BABYLON.Color3(0, 0, 0);
-    light.specular = new BABYLON.Color3(0, 0, 0)
+    var light = new BABYLON.PointLight('light1', new BABYLON.Vector3(4, 1, 0), scene)
+    light.specular = new BABYLON.Color3(0.99, 0, 0)
+    light.diffuse = new BABYLON.Color3(0.99, 0, 0)
 
-    const sphere = BABYLON.MeshBuilder.CreateSphere('sphere', {}, scene)
-    const sphere2 = BABYLON.MeshBuilder.CreateSphere('sphere', {}, scene)
-    const sphere3 = BABYLON.MeshBuilder.CreateSphere('sphere', {}, scene)
-    const sphere4 = BABYLON.MeshBuilder.CreateSphere('sphere', {}, scene)
-    sphere.position.z = 1
-    sphere2.position.z = 2
-    sphere3.position.z = 3
-    sphere4.position.z = 4
-    const m = new BABYLON.StandardMaterial('m', scene)
-    m.specularColor = BABYLON.Color3.Black()
-    sphere.material = m
-    light.includedOnlyMeshes = [sphere]
-    light.includedOnlyMeshes = []
+    const ground = BABYLON.MeshBuilder.CreatePlane('plane', {size: 10}, scene)
+    ground.rotation.x = Math.PI / 2
+
+    const mat = new BABYLON.StandardMaterial('matetial', scene)
+    mat.diffuseColor = new BABYLON.Color3(1, 1, 1)
+    mat.specularColor = new BABYLON.Color3(1, 1, 1)
+    mat.emissiveColor = new BABYLON.Color3(0.4, 0.4, 0.4)
+    ground.material = mat
 
     return scene
-
 }
