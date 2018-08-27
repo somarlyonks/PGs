@@ -1,4 +1,4 @@
-var createScene = function() {
+var createScene = function () {
     {  // static
         // macro
         var V3 = BABYLON.Vector3
@@ -13,7 +13,7 @@ var createScene = function() {
         var scene = new BABYLON.Scene(engine)
         scene.clearColor = new BABYLON.Color3(0xfa / 0xff, 0xf0 / 0xff, 0xe6 / 0xff)
         // camera
-        var camera = new BABYLON.FreeCamera("camera1",  new V3(10, 10, -10), scene)
+        var camera = new BABYLON.FreeCamera('camera1',  new V3(10, 10, -10), scene)
         camera.setTarget(V3.Zero())
         camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA
         const {canvasFixW, canvasFixH} = getCanvasFixWH()
@@ -23,11 +23,11 @@ var createScene = function() {
         camera.orthoBottom = -3 * canvasFixH
         // camera.attachControl(canvas, true)
         // lights
-        var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 0.5, 0), scene)
+        var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(1, 0.5, 0), scene)
         light.intensity = 0.8
         // pilot
-        var body = BABYLON.MeshBuilder.CreateCylinder("body", { height: 0.75, diameterTop: 0.2, diameterBottom: 0.5, tessellation: 6, subdivisions: 1 }, scene)
-        var head = new BABYLON.Mesh.CreateSphere("head", 0, 0.35, scene)
+        var body = BABYLON.MeshBuilder.CreateCylinder('body', { height: 0.75, diameterTop: 0.2, diameterBottom: 0.5, tessellation: 6, subdivisions: 1 }, scene)
+        var head = new BABYLON.Mesh.CreateSphere('head', 0, 0.35, scene)
         head.position.y = 0.5
         var pilot = BABYLON.Mesh.MergeMeshes([body, head], true)
         pilot.scaling = new V3(0.75, 0.8, 0.75)
@@ -42,15 +42,15 @@ var createScene = function() {
     }
 
     // {  // utils
-        function getCanvasFixWH (basicSize=1) {
-            const ratio = canvas.height / canvas.width
-            const fix = 1 / Math.sqrt(ratio)
+    function getCanvasFixWH (basicSize=1) {
+        const ratio = canvas.height / canvas.width
+        const fix = 1 / Math.sqrt(ratio)
 
-            const canvasFixW = basicSize * fix
-            const canvasFixH = basicSize * fix * ratio
+        const canvasFixW = basicSize * fix
+        const canvasFixH = basicSize * fix * ratio
 
-            return {canvasFixW, canvasFixH}
-        }
+        return {canvasFixW, canvasFixH}
+    }
     // }
 
     {   // AXIS
@@ -60,7 +60,7 @@ var createScene = function() {
             function makeTextPlane (text, color, size) {
                 const dynamicTexture = new BABYLON.DynamicTexture('DynamicTexture', 50, scene, true)
                 dynamicTexture.hasAlpha = true
-                dynamicTexture.drawText(text, 5, 40, 'bold 36px Arial', color , 'transparent', true)
+                dynamicTexture.drawText(text, 5, 40, 'bold 36px Arial', color, 'transparent', true)
                 const plane = new BABYLON.Mesh.CreatePlane('TextPlane', size, scene, true)
                 plane.material = new BABYLON.StandardMaterial('TextPlaneMaterial', scene)
                 plane.material.backFaceCulling = false
@@ -70,7 +70,7 @@ var createScene = function() {
             }
 
             const axisX = BABYLON.Mesh.CreateLines('axisX', [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0), 
+                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
                 new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
             ], scene)
             axisX.color = new BABYLON.Color3(1, 0, 0)
@@ -78,38 +78,38 @@ var createScene = function() {
             xChar.position = new BABYLON.Vector3(0.9 * size, -0.05 * size, 0)
 
             const axisY = BABYLON.Mesh.CreateLines('axisY', [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( -0.05 * size, size * 0.95, 0), 
-                new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3( 0.05 * size, size * 0.95, 0)
+                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
+                new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
             ], scene)
             axisY.color = new BABYLON.Color3(0, 1, 0)
             const yChar = makeTextPlane('Y', 'green', size / 10)
             yChar.position = new BABYLON.Vector3(0, 0.9 * size, -0.05 * size)
 
             const axisZ = BABYLON.Mesh.CreateLines('axisZ', [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
-                new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
-                ], scene)
+                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, -0.05 * size, size * 0.95),
+                new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, 0.05 * size, size * 0.95)
+            ], scene)
             axisZ.color = new BABYLON.Color3(0, 0, 1)
             var zChar = makeTextPlane('Z', 'blue', size / 10)
             zChar.position = new BABYLON.Vector3(0, 0.05 * size, 0.9 * size)
         }
 
-        function localAxis(size) {
+        function localAxis (size) {
             const localAxisX = BABYLON.Mesh.CreateLines('localAxisX', [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0), 
+                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, 0.05 * size, 0),
                 new BABYLON.Vector3(size, 0, 0), new BABYLON.Vector3(size * 0.95, -0.05 * size, 0)
             ], scene)
             localAxisX.color = new BABYLON.Color3(1, 0, 0)
 
-            localAxisY = BABYLON.Mesh.CreateLines('localAxisY', [
+            const localAxisY = BABYLON.Mesh.CreateLines('localAxisY', [
                 new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(-0.05 * size, size * 0.95, 0),
                 new BABYLON.Vector3(0, size, 0), new BABYLON.Vector3(0.05 * size, size * 0.95, 0)
             ], scene)
             localAxisY.color = new BABYLON.Color3(0, 1, 0)
 
             const localAxisZ = BABYLON.Mesh.CreateLines('localAxisZ', [
-                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0 , -0.05 * size, size * 0.95),
-                new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3( 0, 0.05 * size, size * 0.95)
+                new BABYLON.Vector3.Zero(), new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, -0.05 * size, size * 0.95),
+                new BABYLON.Vector3(0, 0, size), new BABYLON.Vector3(0, 0.05 * size, size * 0.95)
             ], scene)
             localAxisZ.color = new BABYLON.Color3(0, 0, 1)
 
@@ -118,7 +118,7 @@ var createScene = function() {
             ], scene)
             localAxisZ.color = new BABYLON.Color3(0, 0, 1)
 
-            const localOrigin = BABYLON.MeshBuilder.CreateBox('localOrigin', {size:1}, scene)
+            const localOrigin = BABYLON.MeshBuilder.CreateBox('localOrigin', {size: 1}, scene)
             localOrigin.isVisible = false
 
             localAxisX.parent = localOrigin
@@ -140,7 +140,7 @@ var createScene = function() {
         }
     }
 
-    function createStage (prev={position: {x: 0, y: 0, z:0}, direction: 'right'}) {
+    function createStage (prev={position: {x: 0, y: 0, z: 0}, direction: 'right'}) {
         function getRandomDistance (min=2, max=5) {
             return min + Math.random() * (max - min)
         }

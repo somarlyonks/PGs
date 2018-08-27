@@ -1,7 +1,7 @@
-var createScene = function() {
+var createScene = function () {
     var V3 = BABYLON.Vector3
     var scene = new BABYLON.Scene(engine)
-    scene.clearColor = new BABYLON.Color3( .5, .5, .5)
+    scene.clearColor = new BABYLON.Color3(.5, .5, .5)
     var camera = new BABYLON.ArcRotateCamera('camera1',  0, 0, 0, new BABYLON.Vector3(0, 0, -0), scene)
     camera.setPosition(new BABYLON.Vector3(0, 0, -100))
     camera.attachControl(canvas, true)
