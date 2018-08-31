@@ -27,7 +27,7 @@ module.exports = {
             "never"
         ],
         "no-unused-vars": [
-            "error",
+            "off",
             {
                 "vars": "all",
                 "args": "none",

@@ -16,7 +16,7 @@ var createScene = function () { // DOM#rederCanvas
                 V3.Zero(),
                 scene
             )
-            let position = new V3(0.1, 0, 0)
+            const position = new V3(0.1, 0, 0)
             position[axis] = -150
             cameraVp.setPosition(position)
             cameraVp.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA
@@ -46,19 +46,19 @@ var createScene = function () { // DOM#rederCanvas
     })
 
     function add_dot (x=0, y=0, z=0, parent) {
-        let dot = BABYLON.Mesh.CreateSphere('dot', 0, 3, scene, true)
+        const dot = BABYLON.Mesh.CreateSphere('dot', 0, 3, scene, true)
         dot.position = new V3(x, y, z)
         if (parent) {
             dot.parent = parent
         }
         {
             for (let i=0; i < this.length - 1; i++) {
-                let left = this[i]
-                let right = this[i + 1]
-                let isBetween = function (x, left, right) {
+                const left = this[i]
+                const right = this[i + 1]
+                const isBetween = function (x, left, right) {
                     return (left <= x && x <= right) || (left >= x && x >= right)
                 }
-                let between = axisList.filter(axis => isBetween(
+                const between = axisList.filter(axis => isBetween(
                     arguments[axisList.indexOf(axis)],
                     left[axis], right[axis]
                 ))
@@ -159,7 +159,7 @@ var createScene = function () { // DOM#rederCanvas
             pickedXY: [0, 0],
             camera_name: ''
         }
-        let pickResult = function (camera) {return scene.pick(
+        const pickResult = function (camera) {return scene.pick(
             scene.pointerX, scene.pointerY,
             (function (mesh) {
                 return true
@@ -196,10 +196,10 @@ var createScene = function () { // DOM#rederCanvas
                 }
             )
         }
-        scene.onPointerDown = function(evt/* , pickingInfo */) {
+        scene.onPointerDown = function (evt/* , pickingInfo */) {
             evt.preventDefault()
             for (camera of scene.activeCameras) {
-                let r = pickResult(camera)
+                const r = pickResult(camera)
                 console.log(r)
                 if (r.hit) {
                     detachCamerasMouse(scene)
@@ -210,7 +210,7 @@ var createScene = function () { // DOM#rederCanvas
                     console.log('picked', r.pickedMesh)
                     if (r.pickedMesh.name === 'dot') {
                         if (evt.button === 0) {
-                            let hit_ball = new BABYLON.Mesh.CreateSphere(
+                            const hit_ball = new BABYLON.Mesh.CreateSphere(
                                 'hitball', 0, 30, scene, false
                             )
                             hit_ball.parent = r.pickedMesh
@@ -218,7 +218,7 @@ var createScene = function () { // DOM#rederCanvas
                             pickedInfo.hit_ball = hit_ball
                             break
                         } else if (evt.button === 2) {
-                            let parent = pickedInfo.pickedMesh.parent
+                            const parent = pickedInfo.pickedMesh.parent
                             if (parent.getChildren().length < 3) return
                             pickedInfo.pickedMesh.dispose()
                             parent.dots.update_dots(parent)
@@ -241,12 +241,12 @@ var createScene = function () { // DOM#rederCanvas
                 }
             }
         }
-        scene.onPointerMove = function(/* evt, pickingInfo */) {
+        scene.onPointerMove = function (/* evt, pickingInfo */) {
             if (pickedInfo.picked
             && pickedInfo.camera_name.startsWith('cameraVp')
             ) {
-                let pickedPlane = pickedInfo.pickedPlane
-                let pickedMesh = pickedInfo.pickedMesh
+                const pickedPlane = pickedInfo.pickedPlane
+                const pickedMesh = pickedInfo.pickedMesh
                 // console.log('picking', pickedInfo)
                 if (pickedMesh.name === 'dot') {
                     var newPosition = pickResult(scene.activeCameras[axisList.indexOf(pickedPlane) + 1])
@@ -267,7 +267,7 @@ var createScene = function () { // DOM#rederCanvas
                 }
             }
         }
-        scene.onPointerUp = function(/* evt, pickingInfo */) {
+        scene.onPointerUp = function (/* evt, pickingInfo */) {
             if (pickedInfo.picked) {
             // attachCamerasMouse(scene)
                 scene.activeCameras[0].attachControl(canvas, true)
