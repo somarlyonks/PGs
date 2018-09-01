@@ -34,8 +34,16 @@ var createScene = function () {
     ]
     ani1.setKeys(keys1)
     ani2.setKeys(keys2)
-    sphere.animations = [ani1, ani2]
-    window.ani = scene.beginAnimation(sphere, 0, 60, true)
+    sphere.animations = [ani1]
+    window.a1 = scene.beginAnimation(sphere, 0, 60, true)
+    sphere.animations = [ani2]
+    window.a2 = scene.beginAnimation(sphere, 0, 60, true, undefined, undefined, undefined, false)
+    window.a1.pause()
+    window.a1.reset()
+    window.a2.pause()
+    window.a2.reset()
+
+    window.o = sphere
 
     return scene
 }
